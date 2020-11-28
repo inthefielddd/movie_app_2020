@@ -1,57 +1,40 @@
-import React from 'react';
-import ProTypes from "prop-types";
+import React from "react";
+import axios from "axios";
+import Movie from "./Movies";
 
-const foodILike = [
-  {
-  id:1,
-  name: "kimchi",
-  image : "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.tY7yWP7-KjRrTilhGr6ZggHaE9%26pid%3DApi&f=1",
-  rating:4.8
-  },
-  {
-    id:2,
-    name: "coffee",
-    image : "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse4.mm.bing.net%2Fth%3Fid%3DOIP.EeezjupWTmgz2Gj2WTOk9AHaE8%26pid%3DApi&f=1",
-    rating:4.3
-  },
-  {
-    id:3,
-    name: "bread",
-    image : "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.tyUBCGlS3V0KPGFbpx0EdQHaKZ%26pid%3DApi&f=1",
-    rating:4.5
-  },
-  {
-    id:4,
-    name: "pasta",
-    image : "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.-jsXBzcMVliiY6vHmiDGJQHaJ4%26pid%3DApi&f=1",
-    rating:4.9
-  },
-]
-
-
-function Food({name, picture, rating}){
-  return (
-    <div>
-      <img src={picture} alt={name}/>
-      <h2>  I LIKE {name} </h2>
-      <h4>{rating}/5.0</h4>
-  </div>
-  )
+class App extends React.Component{
+  state = {
+    isLoading : true,
+    movies : [ ]
+  }
+  getMovies = async() => {
+    const {data : 
+      {data: 
+        { movies }
+      }} = await axios.get("https://yts-proxy.nomadcoders1.now.sh/list_movies.json?sort_by=rating");
+      //movies.data.data.movies
+    // console.log(movies);
+    this.setState({movies, isLoading : false})
+  };
+  componentDidMount(){
+    this.getMovies();
+  };
+  render(){
+    const { isLoading, movies } = this.state;
+      return (<div>{isLoading
+         ? "Loading..." 
+         : movies.map(movie => (
+          <Movie
+          key={movie.id}
+          id={movie.id} 
+          title={movie.title}
+          year={movie.year} 
+          summary={movie.summary} 
+          poster={movie.medium_cover_image} />
+         ))
+      }
+      </div>
+      );
+    }
 }
-
-Food.prototype = {
-  name : ProTypes.string.isRequired,
-  picture:ProTypes.string.isRequired,
-  rating:ProTypes.number
-
-}
-
-function App() {
-  return <div>
-  {foodILike.map(dish => (
-    <Food key={dish.id} name={dish.name} picture={dish.image} rating={dish.rating}/>
-  ))}
-    </div>
-}
-
 export default App;
